@@ -1,0 +1,28 @@
+TSJ-Dashboard/
+│
+├── backend/            # Código relacionado al backend
+│   ├── app/            # Lógica principal de la API
+│   │   ├── __init__.py
+│   │   ├── models.py   # Definición de modelos de datos
+│   │   ├── routes.py   # Definición de rutas/endpoints
+│   │   ├── services.py # Lógica de negocio (procesamiento de datos)
+│   │   └── utils.py    # Funciones auxiliares
+│   ├── config.py       # Configuración del backend (base de datos, seguridad, etc.)
+│   ├── main.py         # Punto de entrada del backend
+│   └── requirements.txt # Dependencias del backend
+│
+├── frontend/           # Código relacionado al frontend
+│   ├── app/            # Aplicación de Streamlit/Dash
+│   │   ├── components/ # Componentes reutilizables del dashboard
+│   │   ├── pages/      # Diferentes páginas del dashboard
+│   │   ├── assets/     # Archivos estáticos (CSS, imágenes)
+│   │   └── main.py     # Punto de entrada de la aplicación
+│   └── requirements.txt # Dependencias del frontend
+│
+├── docs/               # Documentación del proyecto
+│   ├── README.md       # Documentación principal
+│   └── api-docs.md     # Detalles de los endpoints del backend
+│
+├── .gitignore          # Archivos y carpetas ignorados por Git
+
+
