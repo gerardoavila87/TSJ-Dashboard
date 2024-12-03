@@ -1,5 +1,5 @@
 # backend/main.py
-from app import create_app, db
+from app import create_app
 from routes.students import students_bp
 
 app = create_app()
