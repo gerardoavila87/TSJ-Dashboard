@@ -1,116 +1,110 @@
-import dash
-from dash import dcc, html
+from dash import Dash, html, dcc, Input, Output
 import dash_bootstrap_components as dbc
+from components.gender_card import gender_card
+from components.total_card import total_card
 import requests
-import plotly.graph_objs as go
+import pandas as pd
+import plotly.express as px
 
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
-app.title = "Dashboard de Estudiantes"
+# Inicializar la app
+app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
+app.title = "Dashboard TSJ"
 
+# Función para obtener datos del backend
+def fetch_data(endpoint):
+    try:
+        response = requests.get(f"http://127.0.0.1:5000/{endpoint}")
+        response.raise_for_status()
+        return response.json()
+    except Exception as e:
+        print(f"Error fetching data: {e}")
+        return None
+
+# Layout de la aplicación
+# Layout con contenedores para los IDs requeridos
 app.layout = dbc.Container(
     [
-        html.H1("Dashboard de Control Escolar", className="text-center my-4"),
+        dbc.Row(dbc.Col(html.H1("Dashboard TSJ", className="text-center mb-4"))),
         dbc.Row(
             [
                 dbc.Col(
                     dbc.Card(
-                        [
-                            dbc.CardHeader("Total de Estudiantes"),
-                            dbc.CardBody(
-                                [
-                                    html.H4(
-                                        id="total-students",
-                                        className="card-title text-center",
-                                    ),
-                                    html.P(
-                                        "Cantidad total de estudiantes activos en el periodo.",
-                                        className="card-text text-center",
-                                    ),
-                                ]
-                            ),
-                        ],
-                        className="mb-2",
+                        dbc.CardBody(
+                            [
+                                html.H4("Total Estudiantes", className="card-title"),
+                                html.H2("Cargando...", id="total-students", className="text-center"),
+                            ]
+                        )
                     ),
-                    width=3
+                    width=4,
+                ),
+                dbc.Col(
+                    dbc.Card(
+                        dbc.CardBody(
+                            [
+                                html.H4("Distribución por Género", className="card-title"),
+                                dcc.Graph(id="gender-chart"),
+                            ]
+                        )
+                    ),
+                    width=8,
                 ),
             ]
         ),
         dbc.Row(
-            [
-                dbc.Col(
-                    dbc.Card(
-                        [
-                            dbc.CardHeader("Distribución por Género"),
-                            dbc.CardBody(
-                                [
-                                    dcc.Graph(
-                                        id="genero-pie-chart",
-                                        config={"displayModeBar": False},
-                                    ),
-                                ]
-                            ),
-                        ],
-                        className="mb-4",
-                    ),
-                    width=3,
-                    className="offset-md-3",
+            dbc.Col(
+                dbc.Button(
+                    "Actualizar Datos",
+                    id="update-data",
+                    color="primary",
+                    className="mt-4",
                 )
-            ]
+            )
+        ),
+        dbc.Row(
+            dbc.Col(html.Div(id="update-status", className="mt-3")),
         ),
     ],
     fluid=True,
 )
 
-# Callback para el total de estudiantes
+# Callback para actualizar los datos
 @app.callback(
-    dash.dependencies.Output("total-students", "children"),
-    [dash.dependencies.Input("total-students", "id")],  # Dummy input para activar la carga inicial
+    [
+        Output("total-students", "children"),
+        Output("gender-chart", "figure"),
+        Output("update-status", "children"),
+    ],
+    [Input("update-data", "n_clicks")],
 )
-def update_total_students(_):
-    try:
-        url = "http://localhost:5000/api/matricula/total"
-        params = {"periodo": "2024A"}
-        response = requests.get(url, params=params)
-        data = response.json()
-        return f"{data['estudiantes']} estudiantes"
-    except Exception as e:
-        return f"Error: {str(e)}"
+def update_dashboard(n_clicks):
+    if n_clicks:
+        students_data = fetch_data("data/total")  # Endpoint: {"total_students": 1000}
+        gender_data = fetch_data("data/gender")  # Endpoint: {"gender_distribution": {"M": 5306, "F": 3184}}
 
+        if students_data and gender_data:
+            # Obtener el total de estudiantes
+            total_students = students_data.get("total_students", 0)
 
-# Callback para el gráfico de género
-@app.callback(
-    dash.dependencies.Output("genero-pie-chart", "figure"),
-    [dash.dependencies.Input("genero-pie-chart", "id")],  # Dummy input para activar la carga inicial
-)
-def update_genero_pie(_):
-    try:
-        # Llama a la API
-        url = "http://localhost:5000/api/matricula/genero"
-        params = {"periodo": "2024A"}
-        response = requests.get(url, params=params)
-        data = response.json()
+            # Obtener la distribución por género
+            gender_distribution = gender_data.get("gender_distribution", {})
+            gender_df = pd.DataFrame(
+                [{"Género": k, "Cantidad": v} for k, v in gender_distribution.items()]
+            )
+            
+            # Crear la gráfica
+            gender_chart = px.pie(
+                gender_df, 
+                names="Género", 
+                values="Cantidad", 
+                title="Distribución por Género"
+            )
 
-        # Extraer datos para la gráfica
-        labels = [item["genero"] for item in data]
-        values = [item["cantidad"] for item in data]
-
-        # Crear la figura de Pie Chart
-        figure = go.Figure(
-            data=[
-                go.Pie(
-                    labels=labels,
-                    values=values,
-                    hole=0.3,  # Para un gráfico de dona
-                )
-            ]
-        )
-        figure.update_layout(title="Distribución por Género")
-        return figure
-    except Exception as e:
-        return go.Figure(
-            layout={"title": {"text": f"Error: {str(e)}", "font": {"color": "red"}}}
-        )
+            return total_students, gender_chart, "Datos actualizados correctamente."
+        else:
+            return "Error", {}, "Error al obtener datos del backend."
+    return "", {}, ""
 
 
 if __name__ == "__main__":
-    app.run_server(debug=True)
+    app.run_server(debug=True, port=8050)
