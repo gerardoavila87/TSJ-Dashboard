@@ -12,14 +12,17 @@ app.title = "Dashboard TSJ"
 # Función asíncrona para obtener datos del backend
 async def fetch_data(session, endpoint):
     try:
-        async with session.get(f"http://127.0.0.1:5001/{endpoint}") as response:
+        async with session.get(f"http://127.0.0.1:5010/{endpoint}") as response:
             if response.status == 200:
                 return await response.json()
             else:
-                print(f"Error fetching {endpoint}: {response.status}")
+                print(f"Error fetching {endpoint}: HTTP {response.status}")
                 return None
+    except aiohttp.ClientConnectorError as e:
+        print(f"Connection error while fetching {endpoint}: {e}")
+        return None
     except Exception as e:
-        print(f"Exception in fetch_data for {endpoint}: {e}")
+        print(f"Unexpected error in fetch_data for {endpoint}: {e}")
         return None
 
 # Función para realizar todas las solicitudes simultáneamente
@@ -97,11 +100,6 @@ app.layout = dbc.Container(
         dbc.Row(
             dbc.Col(html.Div(id="update-status", className="mt-3")),
         ),
-        dcc.Interval(
-            id="interval-component",  # Componente para disparar la carga inicial
-            interval=1,  # Se ejecuta una sola vez al inicio (en ms)
-            n_intervals=0,
-        ),
     ],
     fluid=True,
 )
@@ -116,9 +114,10 @@ app.layout = dbc.Container(
         Output("unidad-chart", "figure"),
         Output("update-status", "children"),
     ],
-    [Input("interval-component", "n_intervals")],
+    [Input("total-students", "id")],  # Callback se activa al cargar el layout
 )
-def update_dashboard(n_intervals):
+
+def update_dashboard(_):
     # Usamos asyncio para realizar las solicitudes concurrentes
     data = asyncio.run(fetch_all_data())
     students_data, gender_data, mode_data, status_data, unidad_data = data
@@ -141,12 +140,22 @@ def update_dashboard(n_intervals):
 
         # Modalidad
         modalidad_distribution = mode_data.get("mode_distribution", {})
-        modalidad_total = sum(modalidad_distribution.values())
-
+        mode_rows = [{"Tipo": key, "Cantidad": value} for key, value in modalidad_distribution.items()]
+        mode_table = dash_table.DataTable(
+            columns=[{"name": col, "id": col} for col in ["Tipo", "Cantidad"]],
+            data=mode_rows,
+            style_table={"overflowX": "auto"},
+            style_cell={"textAlign": "left"},
+        )
         # Estatus
         status_distribution = status_data.get("status_distribution", {})
-        status_total = sum(status_distribution.values())
-
+        status_rows = [{"Tipo": key, "Cantidad": value} for key, value in status_distribution.items()]
+        status_table = dash_table.DataTable(
+            columns=[{"name": col, "id": col} for col in ["Tipo", "Cantidad"]],
+            data=status_rows,
+            style_table={"overflowX": "auto"},
+            style_cell={"textAlign": "left"},
+        )
         # Estudiantes por Unidad
         unidad_distribution = unidad_data.get("unidad_distribution", {})
         unidad_df = pd.DataFrame(
@@ -163,8 +172,8 @@ def update_dashboard(n_intervals):
         return (
             total_students,
             gender_chart,
-            modalidad_total,
-            status_total,
+            mode_table,
+            status_table,
             unidad_chart,
             "Datos cargados automáticamente.",
         )
@@ -172,4 +181,4 @@ def update_dashboard(n_intervals):
         return "Error", {}, "Error", "Error", {}, "Error al obtener datos del backend."
 
 if __name__ == "__main__":
-    app.run_server(debug=True, port=8050)
+    app.run_server(debug=True, port=5002)
