@@ -52,7 +52,11 @@ unidad_service = Blueprint("unidad_service", __name__)
 def unidad_distribution():
     try:
         result = {"unidad_distribution": get_unidad_distribution(filtered_data)}
-        return jsonify(result), 200
+        return Response(
+                    json.dumps(result, ensure_ascii=False),
+                    content_type="application/json",
+                    status=200
+                )  
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     

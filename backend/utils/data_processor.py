@@ -1,6 +1,3 @@
-def filter_by_period(data, period):
-    return data[data]
-
 def get_total_students(data):
     return len(data)
 
