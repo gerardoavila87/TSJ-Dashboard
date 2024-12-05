@@ -50,4 +50,7 @@ python app.py
 Backend: http://127.0.0.1:5001
 Frontend: http://127.0.0.1:5002
 
-####Nota
+*Nota*
+Para actualizar los datos son necesarias las credenciales para acceder a la 
+base de datos, la base de datos esta en MariaDB y se incluye el endpoint para
+crear el csv con la información con una consulta en MySQL.
