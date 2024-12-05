@@ -50,3 +50,4 @@ python app.py
 Backend: http://127.0.0.1:5001
 Frontend: http://127.0.0.1:5002
 
+####Nota
