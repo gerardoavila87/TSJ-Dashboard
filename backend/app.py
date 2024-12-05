@@ -5,6 +5,8 @@ from services.total_service import mode_service
 from services.total_service import status_service
 from services.total_service import unidad_service
 from services.total_service import procedencia_service
+from services.total_service import carrera_service
+
 
 from services.csv_service import csv_service
 
@@ -17,6 +19,8 @@ app.register_blueprint(mode_service, url_prefix="/data")
 app.register_blueprint(status_service, url_prefix="/data")
 app.register_blueprint(unidad_service, url_prefix="/data")
 app.register_blueprint(procedencia_service, url_prefix="/data")
+app.register_blueprint(carrera_service, url_prefix="/data")
+
 
 app.register_blueprint(csv_service, url_prefix="/csv")
 

@@ -7,6 +7,8 @@ from utils.data_processor import get_mode_distribution
 from utils.data_processor import get_status_distribution
 from utils.data_processor import get_unidad_distribution
 from utils.data_processor import get_procedencia_distribution
+from utils.data_processor import get_carrera_distribution
+
 
 total_service = Blueprint("total_service", __name__)
 @total_service.route("/total", methods=["GET"])
@@ -67,5 +69,15 @@ def procedencia_distribution():
             content_type="application/json",
             status=200
         )    
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
+carrera_service = Blueprint("carrera_service", __name__)
+@carrera_service.route("/carrera", methods=["GET"])
+def carrera_distribution():
+    try:
+        result = {"carrera_distribution": get_carrera_distribution(load_data("data/matricula_2024B.csv"))}
+        return jsonify(result), 200
+   
     except Exception as e:
         return jsonify({"error": str(e)}), 500

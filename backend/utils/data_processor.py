@@ -15,3 +15,8 @@ def get_unidad_distribution(data):
 
 def get_procedencia_distribution(data):
     return data["municipio"].value_counts().to_dict()
+
+def get_carrera_distribution(data):
+    distribution = data.groupby(["carrera", "modalidad", "nombreUReal"]).size().reset_index(name="estudiantes")
+    distribution_list = distribution.to_dict(orient="records")
+    return distribution_list
