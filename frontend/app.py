@@ -5,7 +5,11 @@ import dash_bootstrap_components as dbc
 import pandas as pd
 import plotly.express as px
 
-
+HEADER_LOGO_PATH = "/assets/tsj.png"
+FOOTER_LOGO_EDU = "/assets/educacion.svg" 
+FOOTER_LOGO_TEC = "/assets/tecnologico.svg" 
+FOOTER_LOGO_INN = "/assets/innovacion.svg" 
+FOOTER_LOGO_JAL = "/assets/jalisco.svg" 
 
 # Inicializar la app
 app = Dash(__name__, external_stylesheets=[dbc.themes.LUX])
@@ -35,13 +39,7 @@ async def fetch_all_data():
         tasks = [fetch_data(session, endpoint) for endpoint in endpoints]
         return await asyncio.gather(*tasks)
     
-print("Assets folder detected:", app.get_asset_url(""))
 
-HEADER_LOGO_PATH = "/assets/tsj.png"
-FOOTER_LOGO_EDU = "/assets/educacion.svg" 
-FOOTER_LOGO_TEC = "/assets/tecnologico.svg" 
-FOOTER_LOGO_INN = "/assets/innovacion.svg" 
-FOOTER_LOGO_JAL = "/assets/jalisco.svg" 
 
 # Layout de la aplicación
 app.layout = dbc.Container(
