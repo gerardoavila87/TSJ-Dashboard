@@ -210,23 +210,23 @@ def update_dashboard(_):
             columns=[{"name": col, "id": col} for col in ["Tipo", "Cantidad"]],
             data=mode_rows,
             style_table={
-                "overflowX": "auto",  # Permite scroll horizontal si es necesario
-                "border": "1px solid #dee2e6",  # Bordes ligeros para estilo limpio
+                "overflowX": "auto",  
+                "border": "1px solid #dee2e6",  
                 "height":"300px"
             },
             style_cell={
-                "textAlign": "left",  # Alinear texto a la izquierda
-                "fontSize": "12px",  # Texto más pequeño
-                "fontFamily": "Arial, sans-serif",  # Fuente estilizada
-                "padding": "4px 8px",  # Espaciado interno para legibilidad
-                "border": "1px solid #dee2e6",  # Bordes entre celdas
+                "textAlign": "left",  
+                "fontSize": "12px",  
+                "fontFamily": "Arial, sans-serif",  
+                "padding": "4px 8px",  
+                "border": "1px solid #dee2e6",
             },
             style_header={
-                "backgroundColor": "#f8f9fa",  # Color de fondo para encabezados
-                "fontWeight": "bold",  # Texto en negrita para encabezados
-                "fontSize": "13px",  # Tamaño del texto de encabezado ligeramente mayor
-                "textAlign": "center",  # Alinear encabezados al centro
-                "border": "1px solid #dee2e6",  # Bordes para encabezados
+                "backgroundColor": "#f8f9fa",
+                "fontWeight": "bold",
+                "fontSize": "13px",
+                "textAlign": "center",
+                "border": "1px solid #dee2e6",
             },
         )
 

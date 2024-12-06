@@ -1,3 +1,5 @@
+
+# Para el analisis de los datos se utilizan funciones puras
 def get_total_students(data):
     return len(data)
 

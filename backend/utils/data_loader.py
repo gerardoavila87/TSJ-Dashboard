@@ -1,5 +1,7 @@
 import pandas as pd
 
+# Estas funciones nos sirven para el manejo de los archivos csv
+# Se implementa con funciones puras
 def load_data(file_path):
     data = process_data(file_path)
     return data

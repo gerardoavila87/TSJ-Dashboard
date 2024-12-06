@@ -9,7 +9,8 @@ from utils.data_processor import get_unidad_distribution
 from utils.data_processor import get_procedencia_distribution
 from utils.data_processor import get_carrera_distribution
 
-
+# Aquí están todos los endpoinds que sirven la información, implementando la 
+# recuperción de errores
 total_service = Blueprint("total_service", __name__)
 @total_service.route("/total", methods=["GET"])
 def total_students():

@@ -16,17 +16,13 @@ DB_HOST = os.getenv("DB_HOST")
 DB_PORT = os.getenv("DB_PORT")
 DATA_DB_NAME = os.getenv("DATA_DB_NAME")
 
-# Construcción del URL para SQLAlchemy
+# Construcción del URL para la conexión a la base de datos
 DATABASE_URL = f"mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DATA_DB_NAME}"
 engine = create_engine(DATABASE_URL)
 
 @csv_service.route("/generate", methods=["POST"])
 def generate_csv():
-    """
-    Ruta para generar y guardar un archivo CSV desde la base de datos.
-    """
     try:
-        # Obtener el periodo desde la solicitud
         data = request.json
         periodo = data.get("periodo")
         if not periodo:
@@ -54,8 +50,6 @@ def generate_csv():
              WHERE ISNULL(fm.idFechaTermino)
                AND df.periodo = :periodo
         """)
-
-        # Ejecutar la consulta
         with engine.connect() as conn:
             result = conn.execute(query, {"periodo": periodo})
             rows = result.fetchall()
